@@ -7,9 +7,9 @@ services:
     # command: --mysql-native-password=ON
     restart: "no"
     environment:
-      MYSQL_ROOT_PASSWORD: s83n38DGB8d72
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
-      - 33307:3306
+      - "${MYSQL_HOST_PORT}:${MYSQL_CONTAINER_POST}"
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
@@ -17,4 +17,4 @@ services:
     image: adminer:latest
     restart: "no"
     ports:
-      - 8181:8080
+      - "${ADMINER_HOST_PORT}:${ADMINER_CONTAINER_PORT}"

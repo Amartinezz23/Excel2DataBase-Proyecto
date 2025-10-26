@@ -59,8 +59,6 @@ public class Conexion {
 
     }
 
-    public void crearDatabase(Connection conn) {
-
-    }
+    
 
 }
