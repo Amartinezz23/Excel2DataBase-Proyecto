@@ -1,6 +1,7 @@
 package com.iesvdc.dam.acceso;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,16 +33,14 @@ import com.iesvdc.dam.acceso.excelutil.ExcelUtils;
  * nombre del campo y tipo de dato.
  *
  */
-public class Excel2Database 
-{
-    public static void main( String[] args ){     
-        
-        Connection conexion = Conexion.getConnection();
-        //List<String> listaStrings = new ArrayList<>();
-        Map<Integer, String> mapSQL1 = new HashMap<>(); 
-        
+public class Excel2Database {
+    
+    public void ExcelToDataBase(Connection conexion, String path){
+        Map<Integer, String> mapSQL1 = new HashMap<>();
         try {
-            Workbook workbook = new XSSFWorkbook("datos\\PersonasSimp.xlsx");
+            conexion.setAutoCommit(false);
+
+            Workbook workbook = new XSSFWorkbook(path);
             StringBuilder stringBuilderCreateTable = new StringBuilder();
             StringBuilder strimBuilderInsert = new StringBuilder();
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
@@ -75,8 +74,8 @@ public class Excel2Database
                     mapSQL1.put(i, stringBuilderCreateTable.toString());
                     //listaStrings.add(stringBuilderCreateTable.toString());
                 }
-                 //Statement stmt = conexion.createStatement();
-                 //stmt.executeUpdate(mapSQL1.get(i));
+                 Statement stmt = conexion.createStatement();
+                 stmt.executeUpdate(mapSQL1.get(i));
                  strimBuilderInsert.append("\n").append("VALUES ");
                 
                 
@@ -138,29 +137,35 @@ public class Excel2Database
                 String arrayDatos[] = datos.split("(?<=;)");
 
                 for (int b = 0; b < arrayDatos.length; b++) {
-                String insertSQL = arrayDatos[b].trim();
-                if (!insertSQL.isEmpty()) {
-                    Statement stmt2 = conexion.createStatement();
-                    stmt2.executeUpdate(insertSQL);  
-                }           
-}
+                    String insertSQL = arrayDatos[b].trim();
+                    if (!insertSQL.isEmpty()) {
+                        Statement stmt2 = conexion.createStatement();
+                        stmt2.executeUpdate(insertSQL);  
+                    }           
+                }
                 
             }
+            conexion.commit();
             
             
             
         } catch (Exception e) {
-            e.getMessage();
+            try {
+                conexion.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();
+        }finally {
+            try {
+                conexion.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-
-
-        
-
-    
-                
-
-        
     }
+
+
     public static StringBuilder getNombreTablaCreateTable(int num, Workbook workbook){
         StringBuilder builder = new StringBuilder();
         builder.append("CREATE TABLE ").append(workbook.getSheetName(num)).append(" (\n");

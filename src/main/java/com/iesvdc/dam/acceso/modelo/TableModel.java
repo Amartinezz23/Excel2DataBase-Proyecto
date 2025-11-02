@@ -14,4 +14,9 @@ public class TableModel {
     public TableModel(String name) {
         this.name = name;
     }
+
+    public boolean addField(FieldModel fieldModel){
+        return fields.add(fieldModel);
+    }
+
 }

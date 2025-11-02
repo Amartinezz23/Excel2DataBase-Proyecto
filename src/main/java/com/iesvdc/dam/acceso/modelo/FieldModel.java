@@ -13,5 +13,6 @@ public class FieldModel {
         this.name = name;
         this.type = type;
     }
+    
 
 }

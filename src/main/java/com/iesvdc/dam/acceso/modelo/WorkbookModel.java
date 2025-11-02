@@ -9,6 +9,10 @@ import java.util.List;
 public class WorkbookModel {
     private final List<TableModel> tables;
 
+    public List<TableModel> getTables() {
+        return tables;
+    }
+
     public WorkbookModel(List<TableModel> tables) {
         this.tables = tables;
     }
