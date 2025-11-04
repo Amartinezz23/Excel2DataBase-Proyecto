@@ -35,7 +35,7 @@ import com.iesvdc.dam.acceso.excelutil.ExcelUtils;
  */
 public class Excel2Database {
     
-    public void ExcelToDataBase(Connection conexion, String path){
+    public static void ExcelToDataBase(Connection conexion, String path){
         Map<Integer, String> mapSQL1 = new HashMap<>();
         try {
             conexion.setAutoCommit(false);
