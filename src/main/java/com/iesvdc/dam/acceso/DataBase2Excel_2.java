@@ -129,10 +129,10 @@ public class DataBase2Excel_2 {
         StringBuilder builder = new StringBuilder();
         String[] nombresColumnas = hashMap.keySet().toArray(new String[0]);
         builder.append("SELECT ");
-        int contador = 0;
+        
         for (String linea : hashMap.keySet()) {
             builder.append(linea).append(",");
-            contador++;
+            
         }
         builder.deleteCharAt(builder.length() -1);
         builder.append(" FROM ").append(tabla).append(";");
