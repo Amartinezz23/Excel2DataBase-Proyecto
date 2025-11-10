@@ -31,13 +31,41 @@ import com.iesvdc.dam.acceso.excelutil.ExcelUtils;
 import com.iesvdc.dam.acceso.modelo.FieldType;
 import com.iesvdc.dam.acceso.modelo.TableModel;
 import com.iesvdc.dam.acceso.modelo.WorkbookModel;
-
+/**
+ * Clase encargada de exportar la estructura y los datos de una base de datos a un archivo Excel.
+ * 
+ * <p>Utiliza la librería <b>Apache POI</b> para generar hojas Excel (.xlsx)
+ * a partir de las tablas, columnas y registros de una base de datos MySQL u otras bases compatibles con JDBC.</p>
+ * 
+ * <p>Las funciones principales de esta clase son:</p>
+ * <ul>
+ *   <li>Analizar la estructura de la base de datos mediante {@link DatabaseMetaData}.</li>
+ *   <li>Mapear tipos SQL a tipos manejables en Excel (con {@link FieldType}).</li>
+ *   <li>Extraer los datos de cada tabla y volcarlos en hojas Excel independientes.</li>
+ * </ul>
+ * 
+ * <p>Ejemplo de uso:</p>
+ * <pre>
+ * Connection conn = Conexion.getConnection();
+ * DataBase2Excel_2.generarExcel("datos/exportado.xlsx");
+ * </pre>
+ * 
+ * @author Antonio Martinez
+ * @version 1.0
+ */
 public class DataBase2Excel_2 {
 
     
 
     
-
+    /**
+     * Convierte un tipo SQL a un tipo de campo genérico {@link FieldType} para su uso en Excel.
+     * 
+     * <p>Ejemplo: "VARCHAR" → {@code FieldType.STRING}, "INT" → {@code FieldType.INTEGER}</p>
+     * 
+     * @param sqlType el tipo de dato SQL (por ejemplo: "VARCHAR", "INT", "DATE")
+     * @return el {@link FieldType} equivalente, o {@link FieldType#UNKNOWN} si no se reconoce
+     */
     public static FieldType mapSQLTypeToFieldType(String sqlType) {
         if (sqlType == null)
             return FieldType.UNKNOWN;
@@ -61,7 +89,15 @@ public class DataBase2Excel_2 {
     }
 
     
-
+    /**
+     * Genera un archivo Excel (.xlsx) con los datos de toda la base de datos actual.
+     * 
+     * <p>Por cada tabla de la base de datos se crea una hoja independiente en el libro Excel.
+     * Cada hoja contiene una fila de cabecera con los nombres de las columnas y las filas subsiguientes
+     * con los datos de la tabla correspondiente.</p>
+     * 
+     * @param outPath ruta de salida donde se guardará el archivo Excel (por ejemplo: {@code "datos/exportado.xlsx"})
+     */
     public static void generarExcel(String outPath){
         XSSFWorkbook workbook = new XSSFWorkbook();
         Connection connection = Conexion.getConnection();
@@ -94,7 +130,15 @@ public class DataBase2Excel_2 {
         }
         
     }
-
+    /**
+     * Obtiene la estructura de todas las tablas de la base de datos.
+     * 
+     * <p>Devuelve un mapa con los nombres de las tablas como claves, y para cada una,
+     * un {@link LinkedHashMap} de columnas con sus tipos de datos mapeados a {@link FieldType}.</p>
+     * 
+     * @param connection conexión activa a la base de datos
+     * @return un {@code HashMap} donde cada clave es una tabla y su valor es un mapa de columnas y tipos
+     */
     public static HashMap<String,LinkedHashMap<String,FieldType>> obtenerEstructura(Connection connection){
         HashMap<String, LinkedHashMap<String, FieldType>> mapaEstrutura = new HashMap<>();
         try {
@@ -124,7 +168,16 @@ public class DataBase2Excel_2 {
         
         return mapaEstrutura;
     }
-
+    /**
+     * Inserta los datos de una tabla específica de la base de datos en una hoja de Excel.
+     * 
+     * <p>El método ejecuta una consulta {@code SELECT * FROM tabla} y escribe cada registro en una fila.</p>
+     * 
+     * @param connection conexión activa a la base de datos
+     * @param sheet hoja de Excel donde se insertarán los datos
+     * @param tabla nombre de la tabla de la base de datos
+     * @param hashMap mapa de columnas y sus tipos de campo ({@link FieldType})
+     */
     public static void introducirDatosExcel(Connection connection, Sheet sheet , String tabla, LinkedHashMap<String,FieldType> hashMap){
         StringBuilder builder = new StringBuilder();
         String[] nombresColumnas = hashMap.keySet().toArray(new String[0]);
@@ -163,17 +216,5 @@ public class DataBase2Excel_2 {
     }
 
     
-
-    
-
-    
-
-    
-    public static void main(String[] args) {
-        Connection connection = Conexion.getConnection();
-        generarExcel("datos\\outFileExcel.xlsx");
-        
-        
-    }
 
 }

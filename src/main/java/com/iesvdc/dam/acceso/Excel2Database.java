@@ -90,11 +90,11 @@ public class Excel2Database {
                         String valor = "NULL";
 
                         if (cell != null) {
-                            String tipo = ExcelUtils.getTipoDato(cell); // obtenemos el tipo usando tu método
+                            String tipo = ExcelUtils.getTipoDato(cell);
 
                             switch (tipo) {
                                 case "varchar(255)":
-                                case "Fórmula": // si quieres tratar fórmulas como texto
+                                case "Fórmula": 
                                     valor = "'" + cell.getStringCellValue() + "'";
                                     break;
                                 case "int":
@@ -137,10 +137,10 @@ public class Excel2Database {
                 String arrayDatos[] = datos.split("(?<=;)");
 
                 for (int b = 0; b < arrayDatos.length; b++) {
-                    String insertSQL = arrayDatos[b].trim();
-                    if (!insertSQL.isEmpty()) {
+                    String sql = arrayDatos[b].trim();
+                    if (!sql.isEmpty()) {
                         Statement stmt2 = conexion.createStatement();
-                        stmt2.executeUpdate(insertSQL);  
+                        stmt2.executeUpdate(sql);  
                     }           
                 }
                 
@@ -152,6 +152,7 @@ public class Excel2Database {
         } catch (Exception e) {
             try {
                 conexion.rollback();
+                System.out.println("No se pudo realizar la acción");
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
@@ -165,21 +166,33 @@ public class Excel2Database {
         }
     }
 
-
+    /**
+     * Genera la sentencia SQL inicial para crear una tabla.
+     * 
+     * @param num      índice de la hoja dentro del libro Excel.
+     * @param workbook libro Excel leído por Apache POI.
+     * @return {@link StringBuilder} con la sentencia parcial CREATE TABLE.
+     */
     public static StringBuilder getNombreTablaCreateTable(int num, Workbook workbook){
         StringBuilder builder = new StringBuilder();
         builder.append("CREATE TABLE ").append(workbook.getSheetName(num)).append(" (\n");
 
         return builder;
     }
-
+    /**
+     * Genera la sentencia SQL inicial para insertar registros en una tabla.
+     * 
+     * @param num      índice de la hoja dentro del libro Excel.
+     * @param workbook libro Excel leído por Apache POI.
+     * @return {@link StringBuilder} con la sentencia parcial INSERT INTO.
+     */
     public static StringBuilder getNombreTablaInsert(int num, Workbook workbook){
         StringBuilder builder = new StringBuilder();
         builder.append("INSERT INTO ").append(workbook.getSheetName(num));
 
         return builder;
     }
-    //datos\PersonasSimp.xlsx
+    
 
     
 
